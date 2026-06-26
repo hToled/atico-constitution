@@ -329,7 +329,7 @@
    Personnalisation par lien : ...?client=Thierry%20Verrouil&dossier=2026-0412&forme=SCI
 =============================================================*/
 const CONFIG = {
-  endpoint: "",                 // <-- COLLER ICI l'URL HTTP du flux Power Automate
+  endpoint: "/api/submit",      // backend serverless Vercel (envoi e-mail + pièces jointes)
   cabinet: "Atico Finance",
   maxAssocies: 10,
   maxFileMo: 10
@@ -724,7 +724,8 @@ async function submitDossier(){
   try{
     const payload=collectData(); payload.documents=await buildDocuments();
     if(!CONFIG.endpoint){ console.log('PAYLOAD (mode démo, non envoyé) :',payload); await new Promise(r=>setTimeout(r,900)); finishOk('Mode démonstration : aucune URL configurée (voir la console du navigateur).'); return; }
-    await fetch(CONFIG.endpoint,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=UTF-8'}, body:JSON.stringify(payload) });
+    const resp=await fetch(CONFIG.endpoint,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!resp.ok) throw new Error('Réponse serveur '+resp.status);
     finishOk();
   }catch(e){ console.error(e); go(6); const err=document.getElementById('err6'); err.textContent="L'envoi a échoué. Vérifiez votre connexion et réessayez."; err.classList.add('show'); document.getElementById('sendBtn').disabled=false; }
 }
