@@ -366,7 +366,7 @@ function next(from,to){ if(validate(from)) go(to); }
 /* ====================== VALIDATION ====================== */
 function markInvalid(el,bad){ el.classList.toggle('invalid', bad); }
 function validate(step){
-  let ok=true;
+  let ok=true, msg='';
   const card=document.querySelector(`[data-step="${step}"]`);
   if(step===1||step===2||step===3){
     card.querySelectorAll('[data-req]').forEach(el=>{
@@ -374,10 +374,27 @@ function validate(step){
       const bad=!String(el.value||'').trim(); markInvalid(el,bad); if(bad) ok=false;
     });
   }
-  if(step===2 && !document.querySelectorAll('#assocList .assoc').length) ok=false;
+  if(step===2){
+    const cards=document.querySelectorAll('#assocList .assoc');
+    if(!cards.length) ok=false;
+    if(ok){
+      let sum=0;
+      const parts=document.querySelectorAll('#assocList .assoc [data-f="parts"]');
+      parts.forEach(el=>{ const v=parseFloat(String(el.value||'').replace(',','.')); if(!isNaN(v)) sum+=v; });
+      sum=Math.round(sum*100)/100;
+      if(Math.abs(sum-100)>0.01){
+        ok=false;
+        msg=`La répartition des parts doit faire 100 % au total (actuellement ${sum} %).`;
+        parts.forEach(el=>el.classList.add('invalid'));
+      } else { parts.forEach(el=>el.classList.remove('invalid')); }
+    }
+  }
   if(step===4) ok=!!bankChoice;
   const err=document.getElementById('err'+step);
-  if(err) err.classList.toggle('show', !ok);
+  if(err){
+    if(step===2) err.textContent = msg || 'Merci de compléter les champs obligatoires de chaque associé.';
+    err.classList.toggle('show', !ok);
+  }
   return ok;
 }
 
