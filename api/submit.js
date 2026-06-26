@@ -35,6 +35,8 @@ function buildHtml(d) {
         row('Nom de naissance', a.nomNaissance) +
         row('Né(e) le', `${a.dateNaissance || ''} à ${a.villeNaissance || ''} (${a.paysNaissance || ''})`) +
         row('Nationalité', a.nationalite) + row('Statut matrimonial', a.statutMatrimonial) +
+        (a.regimeMatrimonial ? row('Régime / convention', a.regimeMatrimonial) : '') +
+        ((a.conjointNom || a.conjointPrenom) ? row('Conjoint', `${a.conjointPrenom || ''} ${a.conjointNom || ''}`) : '') +
         row('Adresse', `${a.adresse || ''}, ${a.cp || ''} ${a.ville || ''} ${a.pays || ''}`) +
         row('Parts', (a.parts || '') + ' %') +
         row('Contact', `${a.email || ''} ${a.telephone ? '· ' + (a.indicatif || '') + ' ' + a.telephone : ''}`);
