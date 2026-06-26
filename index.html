@@ -64,6 +64,7 @@
 
   .up{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px;cursor:pointer}
   .up:hover{border-color:#b9caf6}
+  .up.drag{border-color:var(--brand);background:var(--brand-soft);box-shadow:0 0 0 3px var(--brand-soft)}
   .up .ico{width:38px;height:38px;border-radius:9px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
   .up .meta{flex:1;min-width:0}
   .up .meta b{font-size:14px}
@@ -261,7 +262,7 @@
   <section class="card" data-step="5" hidden>
     <span class="eyebrow">Étape 5 / 5</span>
     <h1>Pièces justificatives</h1>
-    <p class="sub">Formats acceptés : PDF, JPG, PNG · 10 Mo max par fichier.</p>
+    <p class="sub">Pour chaque pièce : <b>cliquez</b> sur la zone pour parcourir votre ordinateur, <b>ou glissez-déposez</b> le(s) fichier(s) dessus. Formats : PDF, JPG, PNG · 10 Mo max par fichier.</p>
 
     <div class="subhead" style="margin-top:6px">Identité des associés</div>
     <div id="idDocs"></div>
@@ -588,19 +589,24 @@ function pick(el){ document.querySelectorAll('.bank').forEach(b=>b.classList.rem
 /* ====================== ÉTAPE 5 : documents ====================== */
 function uploadBlock(key,icon,title,desc){
   const f=FILES[key]||[], filled=f.length>0, label=filled?f.map(x=>x.name).join(', '):desc;
-  return `<label class="up${filled?' filled':''}" data-doc="${key}">
+  return `<label class="up${filled?' filled':''}" data-doc="${key}" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'${key}')">
     <input type="file" multiple hidden accept=".pdf,.jpg,.jpeg,.png" onchange="onFile(this,'${key}')">
     <div class="ico">${icon}</div><div class="meta"><b>${title}</b><p class="st">${label}</p></div>
-    <span class="upbtn">${filled?'Modifier':'Téléverser'}</span></label>`;
+    <span class="upbtn">${filled?'Modifier':'Parcourir'}</span></label>`;
 }
-function onFile(input,key){
-  const tooBig=[...input.files].find(f=>f.size>CONFIG.maxFileMo*1024*1024);
-  if(tooBig){ alert(`"${tooBig.name}" dépasse ${CONFIG.maxFileMo} Mo.`); input.value=''; return; }
-  FILES[key]=[...input.files];
-  const wrap=input.closest('.up'); wrap.classList.add('filled');
-  wrap.querySelector('.st').textContent=FILES[key].map(x=>x.name).join(', ');
+function setFiles(key,fileList,wrap){
+  const arr=[...fileList]; if(!arr.length) return;
+  const tooBig=arr.find(f=>f.size>CONFIG.maxFileMo*1024*1024);
+  if(tooBig){ alert(`"${tooBig.name}" dépasse ${CONFIG.maxFileMo} Mo.`); return; }
+  FILES[key]=arr;
+  wrap.classList.add('filled');
+  wrap.querySelector('.st').textContent=arr.map(x=>x.name).join(', ');
   wrap.querySelector('.upbtn').textContent='Modifier';
 }
+function onFile(input,key){ setFiles(key, input.files, input.closest('.up')); }
+function onDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('drag'); }
+function onDragLeave(e){ e.currentTarget.classList.remove('drag'); }
+function onDrop(e,key){ e.preventDefault(); e.currentTarget.classList.remove('drag'); setFiles(key, e.dataTransfer.files, e.currentTarget); }
 function renderIdDocs(){
   document.getElementById('idDocs').innerHTML=
     uploadBlock('cni','🆔','CNI ou passeport — chaque associé','Recto/verso pour chaque associé')+
