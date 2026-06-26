@@ -414,6 +414,10 @@ function toggleType(btn){
   card.querySelector('[data-block="pm"]').hidden=!pm;
   card.querySelector('[data-block="pp"]').hidden=pm;
 }
+function toggleMatri(sel){
+  const w=sel.closest('.assoc').querySelector('.matri-wrap');
+  if(w) w.hidden=!(sel.value==='Marié(e)'||sel.value==='Pacsé(e)');
+}
 
 function addAssoc(){
   const cards=document.querySelectorAll('#assocList .assoc');
@@ -458,7 +462,24 @@ function addAssoc(){
       </div>
       <div class="subhead">Situation matrimoniale</div>
       <label>Statut matrimonial</label>
-      <select data-f="statutMatrimonial"><option>Célibataire</option><option>Marié(e)</option><option>Pacsé(e)</option><option>Divorcé(e)</option><option>Veuf(ve)</option></select>
+      <select data-f="statutMatrimonial" onchange="toggleMatri(this)"><option>Célibataire</option><option>Marié(e)</option><option>Pacsé(e)</option><option>Divorcé(e)</option><option>Veuf(ve)</option></select>
+      <div class="matri-wrap" hidden>
+        <label>Régime matrimonial / convention de PACS</label>
+        <select data-f="regimeMatrimonial">
+          <option>Communauté réduite aux acquêts (régime légal)</option>
+          <option>Séparation de biens</option>
+          <option>Communauté universelle</option>
+          <option>Participation aux acquêts</option>
+          <option>PACS — séparation de biens</option>
+          <option>PACS — indivision</option>
+          <option>Autre / contrat spécifique</option>
+        </select>
+        <div class="hint">Si vous avez un contrat de mariage / une convention de PACS, vous pourrez le joindre aux pièces (étape 5).</div>
+        <div class="row">
+          <div><label>Conjoint — Nom <span class="req">*</span></label><input data-f="conjointNom" data-req placeholder="Nom du conjoint"></div>
+          <div><label>Conjoint — Prénom <span class="req">*</span></label><input data-f="conjointPrenom" data-req placeholder="Prénom du conjoint"></div>
+        </div>
+      </div>
       <div class="subhead">Adresse</div>
       <label>Adresse <span class="req">*</span></label>
       <input data-f="adresse" data-req class="ac-addr" data-addr="part" data-role="adresse" autocomplete="off" placeholder="Commencez à taper l'adresse…">
