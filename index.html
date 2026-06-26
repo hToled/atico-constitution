@@ -704,7 +704,12 @@ window.addEventListener('scroll',()=>{ if(acInput) placeDD(acInput); },true);
 /* ====================== COLLECTE / RÉCAP / ENVOI ====================== */
 function readFields(scope){
   const o={};
-  scope.querySelectorAll('[data-f]').forEach(el=>{ if(el.closest('.up')) return; if(el.closest('[hidden]')) return; o[el.dataset.f]=String(el.value||'').trim(); });
+  scope.querySelectorAll('[data-f]').forEach(el=>{
+    if(el.closest('.up')) return;                          // zones de fichiers
+    const blk=el.closest('[data-block]'); if(blk && blk.hidden) return;   // bloc personne physique/morale non actif
+    const mw=el.closest('.matri-wrap'); if(mw && mw.hidden) return;       // bloc conjoint masqué (non marié/pacsé)
+    o[el.dataset.f]=String(el.value||'').trim();
+  });
   return o;
 }
 function collectData(){
