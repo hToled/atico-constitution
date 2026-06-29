@@ -145,7 +145,7 @@
     <p class="sub">Les caractéristiques principales de l'entité à créer.</p>
 
     <label>Dénomination sociale <span class="req">*</span></label>
-    <input data-f="denomination" data-req placeholder="Ex. SCI du Moulin">
+    <input data-f="denomination" data-req placeholder="Dénomination sociale">
     <div class="hint">Indiquez 2 ou 3 alternatives si possible (en cas d'indisponibilité du nom).</div>
     <input data-f="alternatives" placeholder="Alternatives (facultatif)" style="margin-top:8px">
 
@@ -326,8 +326,8 @@
 
 <script>
 /* ====================== CONFIGURATION ======================
-   Renseignez l'URL de votre flux Power Automate ("Lorsqu'une requête HTTP est reçue").
-   Personnalisation par lien : ...?client=Thierry%20Verrouil&dossier=2026-0412&forme=SCI
+   Backend serverless Vercel (/api/submit).
+   Personnalisation par lien : ...?client=Prenom%20Nom&dossier=REFERENCE&forme=SCI
 =============================================================*/
 const CONFIG = {
   endpoint: "/api/submit",      // backend serverless Vercel (envoi e-mail + pièces jointes)
@@ -462,16 +462,16 @@ function addAssoc(){
         <button class="active" onclick="segPick(this)">Monsieur</button>
       </div>
       <div class="row">
-        <div><label>Prénom <span class="req">*</span></label><input data-f="prenom" data-req placeholder="Matthieu"></div>
+        <div><label>Prénom <span class="req">*</span></label><input data-f="prenom" data-req placeholder="Prénom"></div>
         <div><label>Autres prénoms</label><input data-f="autresPrenoms" placeholder="facultatif"></div>
       </div>
       <div class="row">
-        <div><label>Nom de famille <span class="req">*</span></label><input data-f="nom" data-req placeholder="IGER"></div>
+        <div><label>Nom de famille <span class="req">*</span></label><input data-f="nom" data-req placeholder="Nom de famille"></div>
         <div><label>Nom de naissance</label><input data-f="nomNaissance" placeholder="si différent — facultatif"></div>
       </div>
       <div class="subhead">État civil</div>
       <div class="row">
-        <div><label>Ville de naissance <span class="req">*</span></label><input data-f="villeNaissance" data-req placeholder="Dieppe"></div>
+        <div><label>Ville de naissance <span class="req">*</span></label><input data-f="villeNaissance" data-req placeholder="Ville de naissance"></div>
         <div><label>Pays de naissance <span class="req">*</span></label><input data-f="paysNaissance" data-req value="France"></div>
       </div>
       <div class="row">
@@ -503,8 +503,8 @@ function addAssoc(){
       <input data-f="adresse" data-req class="ac-addr" data-addr="part" data-role="adresse" autocomplete="off" placeholder="Commencez à taper l'adresse…">
       <div class="search-note">🔎 Base Adresse Nationale — le CP et la ville se remplissent automatiquement. Saisie manuelle possible.</div>
       <div class="row">
-        <div style="max-width:160px"><label>CP <span class="req">*</span></label><input data-f="cp" data-req data-role="cp" placeholder="25300"></div>
-        <div><label>Ville <span class="req">*</span></label><input data-f="ville" data-req data-role="ville" placeholder="Pontarlier"></div>
+        <div style="max-width:160px"><label>CP <span class="req">*</span></label><input data-f="cp" data-req data-role="cp" placeholder="Code postal"></div>
+        <div><label>Ville <span class="req">*</span></label><input data-f="ville" data-req data-role="ville" placeholder="Ville"></div>
         <div><label>Pays <span class="req">*</span></label><input data-f="pays" data-req value="France"></div>
       </div>
     </div>
@@ -513,7 +513,7 @@ function addAssoc(){
     <div data-block="pm" hidden>
       <div class="subhead">Identification (base INSEE)</div>
       <label>Rechercher l'entreprise (nom ou SIREN)</label>
-      <input class="ac-insee" autocomplete="off" placeholder="Ex. « ATICO FINANCE » ou « 900123456 »">
+      <input class="ac-insee" autocomplete="off" placeholder="Nom de l'entreprise ou n° SIREN">
       <div class="search-note">🔎 Recherche sur la base INSEE des entreprises françaises. Sélectionnez pour remplir automatiquement.</div>
       <div class="row">
         <div><label>Dénomination <span class="req">*</span></label><input data-f="pmDenomination" data-req placeholder="Dénomination sociale"></div>
@@ -532,13 +532,13 @@ function addAssoc(){
     </div>
 
     <div class="subhead">Parts sociales</div>
-    <div class="row"><div style="max-width:160px"><label>Parts (%) <span class="req">*</span></label><input data-f="parts" data-req placeholder="50"></div></div>
+    <div class="row"><div style="max-width:160px"><label>Parts (%) <span class="req">*</span></label><input data-f="parts" data-req placeholder="Ex. 50"></div></div>
 
     <div class="subhead">Coordonnées (facultatif)</div>
-    <label>E-mail</label><input data-f="email" placeholder="ex : jean.durand@email.com">
+    <label>E-mail</label><input data-f="email" placeholder="Adresse e-mail">
     <div class="row">
       <div><label>Indicatif</label><input data-f="indicatif" value="+33"></div>
-      <div><label>Téléphone</label><input data-f="telephone" placeholder="06 82 47 22 10"></div>
+      <div><label>Téléphone</label><input data-f="telephone" placeholder="Numéro de téléphone"></div>
     </div>`;
   document.getElementById('assocList').appendChild(div);
   renumberAssoc(); refreshAssocRemove(); updateAddBtn();
@@ -579,8 +579,8 @@ function addMand(pref){
     <span class="chip">Mandataire ${document.querySelectorAll('#mandList .assoc').length+1}</span>
     <button class="rm" onclick="removeMand(this)">✕ retirer</button>
     <div class="row" style="margin-top:10px">
-      <div><label>Nom <span class="req">*</span></label><input data-f="nom" data-req value="${pref.n||''}" placeholder="VERROUIL"></div>
-      <div><label>Prénom <span class="req">*</span></label><input data-f="prenom" data-req value="${pref.p||''}" placeholder="Thierry"></div>
+      <div><label>Nom <span class="req">*</span></label><input data-f="nom" data-req value="${pref.n||''}" placeholder="Nom"></div>
+      <div><label>Prénom <span class="req">*</span></label><input data-f="prenom" data-req value="${pref.p||''}" placeholder="Prénom"></div>
       <div class="fonction-wrap"><label>Fonction</label>${fonctionSelectHTML()}</div>
     </div>
     <div class="rpps-wrap"></div>`;
